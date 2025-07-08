@@ -1,6 +1,8 @@
 local defaults = {
-    -- TODO: add data path and lazy path if existing
-    include = { vim.fs.joinpath(vim.fn.stdpath('config'), 'templates') },
+    include = {
+        vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
+        vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'tiny-templates.nvim', 'templates')
+    },
     templates = {
         ['*.lua'] = 'skel.lua',
         ['ftplugin/*.vim'] = 'ftplugin.vim',
