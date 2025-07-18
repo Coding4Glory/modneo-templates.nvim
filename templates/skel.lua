@@ -1,3 +1,5 @@
+-- {{ LICENSE }}
+
 ---@class MyModule
 local M = {}
 

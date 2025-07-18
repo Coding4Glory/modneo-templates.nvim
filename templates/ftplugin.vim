@@ -1,3 +1,5 @@
+" {{ LICENSE }}>
+
 " ftplugin/ files are sourced by the filetype plugin itself and need to be
 " written in vim script. Replace the <filetype> place holder with a file type
 " not already coverd by a different ftplugin script
@@ -24,7 +26,8 @@ setlocal smarttab
 augroup tiny_ftplugin
   aucmd!
   " define custom keybindings in this section, you may use <localleader>
-  " instead of <leader> to avoid confision with global mappings
+  " instead of <leader> to avoid confision with global mappings e. g. 
+  " `nmap <localleader>bd <Cmd>BuildDocs<CR>`
 augroup END
 
 
