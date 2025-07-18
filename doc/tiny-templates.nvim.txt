@@ -5,7 +5,7 @@ Table of Contents                      *tiny-templates.nvim-table-of-contents*
 
 1. tiny.nvim templates support|tiny-templates.nvim-tiny.nvim-templates-support|
   - Setup and Configuration |tiny-templates.nvim-tiny.nvim-templates-support-setup-and-configuration-|
-  - and Usage     |tiny-templates.nvim-tiny.nvim-templates-support-and-usage-|
+  - Usage             |tiny-templates.nvim-tiny.nvim-templates-support-usage-|
 
 ==============================================================================
 1. tiny.nvim templates support*tiny-templates.nvim-tiny.nvim-templates-support*
@@ -20,7 +20,7 @@ Setupwith Lazy
 >lua
     return {
         "Coding4Glory/tiny-templates.nvim",
-	-- defaults shown
+        -- defaults shown
         opts = {
             include = {
                 vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
@@ -35,7 +35,7 @@ Setupwith Lazy
 <
 
 
-AND USAGE         *tiny-templates.nvim-tiny.nvim-templates-support-and-usage-*
+USAGE                 *tiny-templates.nvim-tiny.nvim-templates-support-usage-*
 
 Placeyour templates into the template directory, default on linux is
 `~/.config/nvim/templates`.

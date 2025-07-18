@@ -23,7 +23,7 @@ return {
 }
 ```
 
-## and Usage 🛠
+## Usage 🛠
 
 Place your templates into the template directory, default on linux is `~/.config/nvim/templates`.
 
