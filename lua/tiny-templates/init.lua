@@ -24,7 +24,7 @@ return {
                 {
                     pattern = p,
                     group = template_group,
-                    callback = load_template(config.include, t)
+                    callback = function() load_template(config.include, t) end
                 })
         end
     end
