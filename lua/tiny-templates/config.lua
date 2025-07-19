@@ -16,30 +16,35 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+---@class TinyTemplateSettings
 local defaults = {
+    ---@type table
+    ---a list of paths to search for templates, first template found will be used
+    ---so list order is important
     include = {
         vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
         vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'tiny-templates.nvim', 'templates')
     },
+    ---@type table
+    ---A table with patterns and template file names.
+    ---Patterns should be file names containing wildcards
+    ---e. g. `*.lua` or `ftplugin/*.vim`. 
     templates = {
         ['*.lua'] = 'skel.lua',
         ['ftplugin/*.vim'] = 'ftplugin.vim',
     }
 }
 
----@class TemplateConfig
+---@class TinyTemplateConfig
+---@field settings TinyTemplateSettings
 local M = {}
-
----@class TemplateSettings
----@field include table a list with paths to search for templates
----@field templates table a table with template mappings
-M.config = {}
 
 ---@type function
 ---@param opts table table with user defined options
-M.setup = function(opts)
-    M.config = vim.tbl_deep_extend('force', defaults, opts or {})
-    return M.config
+---@return TinyTemplateSettings
+M.init = function(opts)
+    M.settings = vim.tbl_deep_extend('force', defaults, opts or {})
+    return M.settings
 end
 
 return M

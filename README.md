@@ -9,7 +9,7 @@ Setup with Lazy
 ```lua
 return {
     "Coding4Glory/tiny-templates.nvim",
-    -- defaults shown
+    -- default options, pass an empty table to use defaults
     opts = {
         include = {
             vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
@@ -27,5 +27,5 @@ return {
 
 Place your templates into the template directory, default on linux is `~/.config/nvim/templates`.
 
-Other Os place accordingly to `vim.fs.joinpath(vim.fn.stdpath('config'), 'templates')`
+Other OS place accordingly to `vim.fs.joinpath(vim.fn.stdpath('config'), 'templates')`
 

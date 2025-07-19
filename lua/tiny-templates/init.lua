@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
---
+
 ---loads the template according
 ---@param include_paths string[] the paths to search for templates in order
 ---@param template string the template name to apply
@@ -33,16 +33,16 @@ end
 return {
     ---@type function 
     ---initializes the module by setting up auto commands for configured file patterns
-    ---@param opts TemplateSettings
+    ---@param opts TinyTemplateSettings
     setup = function(opts)
-        local config = require('tiny-templates.config').setup(opts)
+        local settings = require('tiny-templates.config').init(opts)
         local template_group = vim.api.nvim_create_augroup('tiny_templates', { clear = true, })
-        for p, t in pairs(config.templates) do
+        for p, t in pairs(settings.templates) do
             vim.api.nvim_create_autocmd({ 'BufNewFile' },
                 {
                     pattern = p,
                     group = template_group,
-                    callback = function() load_template(config.include, t) end
+                    callback = function() load_template(settings.include, t) end
                 })
         end
     end
