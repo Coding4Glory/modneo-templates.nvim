@@ -20,31 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@param include_paths string[] the paths to search for templates in order
 ---@param template string the template name to apply
 local function load_template(include_paths, template)
-     for _, p in ipairs(include_paths) do
-        local template_path = vim.fs.joinpath(p, template)
-        if vim.uv.fs_stat(template_path) then
-            vim.cmd('0read' .. template_path)
-            return
-        end
-    end
+	for _, p in ipairs(include_paths) do
+		local template_path = vim.fs.joinpath(p, template)
+		if vim.uv.fs_stat(template_path) then
+			vim.cmd("0read" .. template_path)
+			return
+		end
+	end
+	vim.notify("Template: " .. template .. " not found", vim.log.levels.WARN)
 end
 
 ---@class TinyTemplates
 return {
-    ---@type function 
-    ---initializes the module by setting up auto commands for configured file patterns
-    ---@param opts TinyTemplateSettings
-    setup = function(opts)
-        local settings = require('tiny-templates.config').init(opts)
-        local template_group = vim.api.nvim_create_augroup('tiny_templates', { clear = true, })
-        for p, t in pairs(settings.templates) do
-            vim.api.nvim_create_autocmd({ 'BufNewFile' },
-                {
-                    pattern = p,
-                    group = template_group,
-                    callback = function() load_template(settings.include, t) end
-                })
-        end
-    end
+	---@type function
+	---initializes the module by setting up auto commands for configured file patterns
+	---@param opts TinyTemplateSettings
+	setup = function(opts)
+		local settings = require("tiny-templates.config").init(opts)
+		local template_group = vim.api.nvim_create_augroup("tiny_templates", { clear = true })
+		for p, t in pairs(settings.templates) do
+			vim.api.nvim_create_autocmd({ "BufNewFile" }, {
+				pattern = p,
+				group = template_group,
+				callback = function()
+					load_template(settings.include, t)
+				end,
+			})
+		end
+	end,
 }
-
