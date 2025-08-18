@@ -1,9 +1,12 @@
-" {{ LICENSE }}>
-
+" Copyright (c) 2025 Markus Hergenröder
+" 
+" May be used, modified and redistributed without any restrictions implied by GPL-3.0+
+" This includes the above copyright notice.
+"
 " ftplugin/ files are sourced by the filetype plugin itself and need to be
 " written in vim script. Replace the <filetype> place holder with a file type
 " not already coverd by a different ftplugin script
-
+"
 " ensure script runs only once per buffer but allow file type changes
 if exists("b:tiny_ftplugin") && b:tiny_ftplugin == "<filetype>"
   finish
