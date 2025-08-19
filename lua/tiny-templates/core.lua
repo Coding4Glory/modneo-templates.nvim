@@ -16,13 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+---@class TinyTemplates
+---@field options TinyTemplateSettings
 local M = {}
 
----@type TinyTemplateSettings
-M.options = require("tiny-templates.config").options
-
 ---loads the template according
----@param include_paths string[] the paths to search for templates in order
 ---@param template string the template name to apply
 ---@param position any the range prefix for the read command, defaults to 0 for the beginning of the file
 M.load_template = function(template, position)
@@ -38,7 +36,10 @@ M.load_template = function(template, position)
     vim.notify("Template: " .. template .. " not found", vim.log.levels.WARN)
 end
 
+---initialize the core module
 M.init = function()
+    M.options = require("tiny-templates.config").options
+
     local template_group = vim.api.nvim_create_augroup("tiny_templates", { clear = true })
     if M.options.no_autoload then
         return
