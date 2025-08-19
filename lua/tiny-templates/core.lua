@@ -46,13 +46,23 @@ M.init = function()
     end
 
     for p, t in pairs(M.options.templates) do
-        vim.api.nvim_create_autocmd({ "BufNewFile" }, {
+        vim.api.nvim_create_autocmd('BufNewFile', {
             pattern = p,
             group = template_group,
             callback = function(args)
                 M.load_template(t)
             end,
         })
+        vim.api.nvim_create_autocmd('BufRead', {
+            pattern = p,
+            group = template_group,
+            callback = function(args)
+                if vim.api.nvim_get_option_value('modifiable', { buf = args.buf }) == false then return end
+                if vim.api.nvim_buf_line_count(args.buf) > 1 then return end
+                M.load_template(t)
+            end,
+        })
+
     end
 
     return M
