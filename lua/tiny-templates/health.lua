@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local settings = require('tiny-templates.config').options
 local function count_files(path)
     local file_counter = 0
     for _, type in vim.fs.dir(path, {}) do
@@ -27,13 +26,19 @@ end
 
 return {
     check = function()
-        for _, path in ipairs(settings.include) do
+        local options = require('tiny-templates.config').options
+        local available_paths = 0
+        for _, path in ipairs(options.include) do
             if vim.fn.isdirectory(path) == 1 then
                 local files = count_files(path)
                 vim.health.ok(path .. ' exists (' .. files .. ' files)')
+                available_paths = available_paths + 1
             else
                 vim.health.warn(path .. ' does not exist')
             end
+        end
+        if available_paths == 0 then
+            vim.health.error('no template path available')
         end
     end
 }

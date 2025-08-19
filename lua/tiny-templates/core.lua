@@ -35,8 +35,8 @@ end
 
 ---loads the template according
 ---@param template string the template name to apply
----@param position any the line to insert the template, defaults to 0 for first line
-M.load_template = function(template, position)
+---@param position integer? the line to insert the template, defaults to 0 for first line
+M.load_at = function(template, position)
 	position = position or 0
 	local template_path = M.find(template)
 	if template_path ~= nil then
@@ -63,7 +63,7 @@ M.init = function()
 			pattern = p,
 			group = template_group,
 			callback = function(args)
-				M.load_template(t)
+				M.load_at(t)
 			end,
 		})
 		vim.api.nvim_create_autocmd("BufRead", {
@@ -76,7 +76,7 @@ M.init = function()
 				if vim.api.nvim_buf_line_count(args.buf) > 1 then
 					return
 				end
-				M.load_template(t)
+				M.load_at(t)
 			end,
 		})
 	end

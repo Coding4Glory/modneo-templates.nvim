@@ -32,7 +32,7 @@ return {
             if vim.fn.line('$') > 1 then return end
             for p, t in pairs(core.options.templates) do
                 if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
-                    core.load_template(t)
+                    core.load_at(t)
                     return
                 end
             end
@@ -43,7 +43,7 @@ return {
             for p, t in pairs(core.options.templates) do
                 if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))
-                    core.load_template(t, line - 1)
+                    core.load_at(t, line - 1)
                     return
                 end
             end
