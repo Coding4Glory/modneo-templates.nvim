@@ -32,19 +32,23 @@ local defaults = {
     templates = {
         ['*.lua'] = 'skel.lua',
         ['ftplugin/*.vim'] = 'ftplugin.vim',
-    }
+    },
+    ---@type boolean
+    ---can be set to true to prevent automatic template loading for new files.
+    ---Defaults to false since this is the primary use case for this plugin.
+    no_autoload = false,
 }
 
 ---@class TinyTemplateConfig
----@field settings TinyTemplateSettings
+---@field options TinyTemplateSettings
 local M = {}
 
 ---@type function
 ---@param opts table table with user defined options
----@return TinyTemplateSettings
+---@return TinyTemplateConfig
 M.init = function(opts)
-    M.settings = vim.tbl_deep_extend('force', defaults, opts or {})
-    return M.settings
+    M.options = vim.tbl_deep_extend('force', defaults, opts or {})
+    return M
 end
 
 return M
