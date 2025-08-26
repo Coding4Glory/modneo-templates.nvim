@@ -18,18 +18,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class TinyTemplatesPlugin
 return {
+    init = function()
+        if vim.go.tiny_templates_loaded == true then return end
+
+        require('tiny-templates.config').init()
+        require('tiny-templated.core').init()
+        require('tiny-templates.commands').setup()
+        vim.go.tiny_templates_loaded = true
+    end,
+
 	---@type function
 	---initializes the module by setting up auto commands for configured file patterns
 	---@param opts TinyTemplateSettings
 	setup = function(opts)
-        require('tiny-templates.config').init(opts)
-        local core = require('tiny-templates.core').init()
-        if package.loaded['tiny-templates.commands'] ~= nil then
-            local cmd = require('tiny-templates.commands')
-            cmd.unload()
-            cmd.setup(core)
-        else
-            require('tiny-templates.commands').setup(core)
+        require('tiny-templates.config').setup(opts)
+        require('tiny-templates.core').init()
+        if package.loaded['tiny-templates.commands'] == nil then
+            require('tiny-templates.commands').setup()
         end
 	end,
 }

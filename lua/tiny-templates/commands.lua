@@ -23,9 +23,9 @@ end
 ---@class TinyTemplatesCommands
 return {
     ---defines the user commands
-    ---@param core any
-    setup = function(core)
+    setup = function()
         vim.api.nvim_create_user_command('TemplateApply', function(cmdargs)
+            local core = require('tiny-templates.core')
             if cmdargs.bang == true then
                 vim.cmd('%d')
             end
@@ -40,6 +40,7 @@ return {
         end, { bang = true, nargs = 1, desc = 'Apply template if matching is present' })
 
         vim.api.nvim_create_user_command('TemplateAdd', function(cmdargs)
+            local core = require('tiny-templates.core')
             for p, t in pairs(core.options.templates) do
                 if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))

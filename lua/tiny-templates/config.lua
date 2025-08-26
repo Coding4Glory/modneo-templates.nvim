@@ -46,8 +46,13 @@ local M = {}
 ---@type function
 ---@param opts table table with user defined options
 ---@return TinyTemplateConfig
-M.init = function(opts)
-    M.options = vim.tbl_deep_extend('force', defaults, opts or {})
+M.init = function()
+    M.options = vim.tbl_deep_extend('keep', defaults, {})
+    return M
+end
+
+M.setup = function(opts)
+    M.options = vim.tbl_deep_extend('force', M.options or defaults, opts or {})
     return M
 end
 
