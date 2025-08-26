@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
----@class TinyTemplateSettings
+---@class Modneo.TemplatesOptions
 local defaults = {
     ---@type table
     ---a list of paths to search for templates, first template found will be used
@@ -39,21 +39,22 @@ local defaults = {
     no_autoload = false,
 }
 
----@class TinyTemplateConfig
----@field options TinyTemplateSettings
+---@class Modneo.TemplatesConfig
+---@field options Modneo.TemplatesOptions
 local M = {}
 
 ---@type function
----@param opts table table with user defined options
----@return TinyTemplateConfig
+---@return Modneo.TemplatesConfig
 M.init = function()
     M.options = vim.tbl_deep_extend('keep', defaults, {})
     return M
 end
 
+---@param opts table table with user defined options
+---@return Modneo.TemplatesOptions
 M.setup = function(opts)
     M.options = vim.tbl_deep_extend('force', M.options or defaults, opts or {})
-    return M
+    return M.options
 end
 
 return M

@@ -1,5 +1,5 @@
 --[[
-tiny-templates.nvim
+modneo-templates init script
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
----@class TinyTemplatesPlugin
+---@class Modneo.TemplatesPlugin
 return {
     init = function()
         if vim.go.tiny_templates_loaded == true then return end
@@ -29,7 +29,7 @@ return {
 
 	---@type function
 	---initializes the module by setting up auto commands for configured file patterns
-	---@param opts TinyTemplateSettings
+	---@param opts Modneo.TemplatesOptions
 	setup = function(opts)
         require('tiny-templates.config').setup(opts)
         require('tiny-templates.core').init()

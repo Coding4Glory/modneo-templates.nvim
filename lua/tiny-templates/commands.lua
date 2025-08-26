@@ -20,7 +20,7 @@ local function err_msg(t)
     vim.notify('no template present matching ' .. t, vim.log.levels.WARN)
 end
 
----@class TinyTemplatesCommands
+---@class Modneo.TemplatesCommands
 return {
     ---defines the user commands
     setup = function()

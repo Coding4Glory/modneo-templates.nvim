@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
----@class TinyTemplates
----@field options TinyTemplateSettings
+---@class Modneo.Templates
+---@field options Modneo.TemplatesOptions
 local M = {}
 
 ---tries to find the full path of the template file
@@ -48,6 +48,7 @@ M.load_at = function(template, position)
 end
 
 ---initialize the core module
+---@return Modneo.Templates
 M.init = function()
 	M.options = require("tiny-templates.config").options
 
