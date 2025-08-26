@@ -1,5 +1,5 @@
 --[[
-tiny-templates.nvim
+modneo-templates.nvim
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ end
 ---initialize the core module
 ---@return Modneo.Templates
 M.init = function()
-	M.options = require("tiny-templates.config").options
+	M.options = require("modneo-templates.config").options
 
 	local template_group = vim.api.nvim_create_augroup("tiny_templates",
         { clear = true })

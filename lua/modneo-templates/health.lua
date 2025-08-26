@@ -1,5 +1,5 @@
 --[[
-tiny-templates.nvim
+modneo-templates.nvim
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ end
 
 return {
     check = function()
-        local options = require('tiny-templates.config').options
+        local options = require('modneo-templates.config').options
         local available_paths = 0
         for _, path in ipairs(options.include) do
             if vim.fn.isdirectory(path) == 1 then

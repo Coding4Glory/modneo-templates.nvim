@@ -1,9 +1,9 @@
 local empty_count = 1
 require('plenary.busted')
 
-describe("tests for tiny-templates.nvim core", function()
+describe("tests for modneo-templates.nvim core", function()
     describe("with default config", function()
-        require("tiny-templates").setup()
+        require("modneo-templates").setup()
         it("creates a new buffer initialized with a template", function()
             local filename = "test.lua"
             vim.cmd("edit " .. filename)
@@ -21,7 +21,7 @@ describe("tests for tiny-templates.nvim core", function()
     end)
 
     describe("with custom config", function()
-        require("tiny-templates").setup({
+        require("modneo-templates").setup({
             include = { vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture") },
             templates = {
                 ["*.txt"] = "skel.txt",

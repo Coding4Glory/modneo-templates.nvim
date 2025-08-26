@@ -1,5 +1,5 @@
 --[[
-tiny-templates.nvim
+modneo-templates.nvim
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ local defaults = {
     ---so list order is important
     include = {
         vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
-        vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'tiny-templates.nvim', 'templates')
+        vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'modneo-templates.nvim', 'templates')
     },
     ---@type table
     ---A table with patterns and template file names.

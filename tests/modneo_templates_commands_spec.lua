@@ -1,8 +1,8 @@
-describe("tests for tiny-templates.nvim commands", function()
+describe("tests for modneo-templates.nvim commands", function()
     describe("with default config", function()
-        require("tiny-templates").setup()
+        require("modneo-templates").setup()
         it("checks for default options", function()
-            local options = require("tiny-templates.config").options
+            local options = require("modneo-templates.config").options
             assert.is_equal(2, table.maxn(options.include))
             assert.is_truthy((vim.uv or vim.loop).fs_stat(options.include[1]))
         end)
@@ -40,7 +40,7 @@ describe("tests for tiny-templates.nvim commands", function()
     end)
 
     describe("with custom config", function()
-        require("tiny-templates").setup({
+        require("modneo-templates").setup({
             include = { vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture") },
             templates = {
                 ["*.txt"] = "skel.txt",

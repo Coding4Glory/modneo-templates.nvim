@@ -1,5 +1,5 @@
 --[[
-tiny-templates.nvim
+modneo-templates.nvim
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ return {
     ---defines the user commands
     setup = function()
         vim.api.nvim_create_user_command('TemplateApply', function(cmdargs)
-            local core = require('tiny-templates.core')
+            local core = require('modneo-templates.core')
             if cmdargs.bang == true then
                 vim.cmd('%d')
             end
@@ -40,7 +40,7 @@ return {
         end, { bang = true, nargs = 1, desc = 'Apply template if matching is present' })
 
         vim.api.nvim_create_user_command('TemplateAdd', function(cmdargs)
-            local core = require('tiny-templates.core')
+            local core = require('modneo-templates.core')
             for p, t in pairs(core.options.templates) do
                 if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))
@@ -55,6 +55,6 @@ return {
     unload = function()
         vim.api.nvim_del_user_command('TemplateApply')
         vim.api.nvim_del_user_command('TemplateAdd')
-        package.loaded['tiny-templates.commands'] = nil
+        package.loaded['modneo-templates.commands'] = nil
     end
 }

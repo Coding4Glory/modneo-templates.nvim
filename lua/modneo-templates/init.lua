@@ -21,9 +21,9 @@ return {
     init = function()
         if vim.go.tiny_templates_loaded == true then return end
 
-        require('tiny-templates.config').init()
+        require('modneo-templates.config').init()
         require('tiny-templated.core').init()
-        require('tiny-templates.commands').setup()
+        require('modneo-templates.commands').setup()
         vim.go.tiny_templates_loaded = true
     end,
 
@@ -31,10 +31,10 @@ return {
 	---initializes the module by setting up auto commands for configured file patterns
 	---@param opts Modneo.TemplatesOptions
 	setup = function(opts)
-        require('tiny-templates.config').setup(opts)
-        require('tiny-templates.core').init()
-        if package.loaded['tiny-templates.commands'] == nil then
-            require('tiny-templates.commands').setup()
+        require('modneo-templates.config').setup(opts)
+        require('modneo-templates.core').init()
+        if package.loaded['modneo-templates.commands'] == nil then
+            require('modneo-templates.commands').setup()
         end
 	end,
 }
