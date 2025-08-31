@@ -34,7 +34,6 @@ local F = {}
 ---@param val any
 ---@return Modneo.TemplatesTempateEntry
 F.new = function(val)
-
     if type(val) == 'string' then
         return vim.tbl_deep_extend('force', { val }, M)
     end

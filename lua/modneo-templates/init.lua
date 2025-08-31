@@ -1,5 +1,5 @@
 --[[
-modneo-templates init script
+modneo-templates
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -28,16 +28,16 @@ return {
         vim.g.tiny_templates_loaded = true
     end,
 
-	---Initializes the module by setting up auto commands for configured files
+    ---Initializes the module by setting up auto commands for configured files
     ---patterns.
-	---@param opts Modneo.TemplatesOptions
-	setup = function(opts)
+    ---@param opts Modneo.TemplatesOptions
+    setup = function(opts)
         require('modneo-templates.config').setup(opts)
         require('modneo-templates.core').init()
         if package.loaded['modneo-templates.commands'] == nil then
             require('modneo-templates.commands').setup()
         end
-	end,
+    end,
 
     ---Removes the auto commands and user commands so effectivately removes
     ---the plugin.
@@ -50,6 +50,7 @@ return {
             'modneo-templates.commands',
             'modneo-templates.health',
             'modneo-templates.config',
+            'modneo-templates.template_entry',
             'modneo-templates',
         }) do
             if package.loaded[mod] ~= nil then

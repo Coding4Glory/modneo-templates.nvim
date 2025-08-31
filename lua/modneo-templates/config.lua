@@ -1,5 +1,5 @@
 --[[
-modneo-templates.nvim
+modneo-templates
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+---normalizes the template paths in passed options
 ---@param options Modneo.TemplatesOptions
+---@return Modneo.TemplatesOptions
 local function normalize_includes(options)
     for i, dir in ipairs(options.include or {}) do
         if dir == false then
@@ -45,6 +47,16 @@ local function add_skelettons_from_dir(dir, options)
     end
 end
 
+---normalizes the template entries in place
+---@param options Modneo.TemplatesOptions
+local function normalize_templates(options)
+    local factory = require('modneo-templates.template_entry')
+    for pat, tpl in pairs(options.templates) do
+        options.templates[pat] = factory.new(tpl)
+    end
+end
+
+---contains the default path for builtin templates when installed with lazy
 local builtin_templates = vim.fs.joinpath(
     vim.fn.stdpath('data'),
     'lazy',
@@ -52,6 +64,7 @@ local builtin_templates = vim.fs.joinpath(
     'templates'
 )
 
+---contains the default path for user templates
 local user_templates = vim.fs.joinpath(
     vim.fn.stdpath('config'),
     'templates'
@@ -61,7 +74,7 @@ local user_templates = vim.fs.joinpath(
 local defaults = {
     ---a list of paths to search for templates, first template found will be used
     ---so list order is important
-    ---@type table
+    ---@type string[]
     include = {
         user_templates,
         builtin_templates,
@@ -72,7 +85,7 @@ local defaults = {
     ---skel.lua is not defined since auto_skelettons defaults to true.
     ---Paths can be absolute, in this case the include folders will not
     ---be searched.
-    ---@type table
+    ---@type table<string,string|Modneo.TemplatesTempateEntry>
     templates = {
         ["ftplugin/*.vim"] = "ftplugin.vim",
     },
@@ -118,7 +131,7 @@ end
 ---@param opts table table with user defined options
 ---@return Modneo.TemplatesOptions
 M.setup = function(opts)
-    opts = normalize_includes(opts)
+    opts = normalize_includes(opts or {})
     M.options = vim.tbl_deep_extend("force", M.options or {}, defaults, opts)
     -- remove defaults if user templates are set manually or false is included
     if
@@ -140,6 +153,7 @@ M.setup = function(opts)
     if M.options.auto_skeletons and vim.g.modneo_templates_auto_skel_loaded ~= 1 then
         M.add_skeletons()
     end
+    normalize_templates(M.options)
     return M.options
 end
 

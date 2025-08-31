@@ -1,5 +1,5 @@
 --[[
-modneo-templates.nvim
+modneo-templates
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ return {
             end
             if vim.fn.line('$') > 1 then return end
             for p, t in pairs(core.options.templates) do
-                if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
+                if cmdargs.args == p or vim.endswith(t[1], cmdargs.args) then
                     core.load_at(t)
                     return
                 end
@@ -42,7 +42,7 @@ return {
         vim.api.nvim_create_user_command('TemplateAdd', function(cmdargs)
             local core = require('modneo-templates.core')
             for p, t in pairs(core.options.templates) do
-                if cmdargs.args == p or vim.endswith(t, cmdargs.args) then
+                if cmdargs.args == p or vim.endswith(t[1], cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))
                     core.load_at(t, line - 1)
                     return

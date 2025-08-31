@@ -41,7 +41,7 @@ describe("tests for modneo-templates.nvim commands", function()
 
     describe("with custom config", function()
         require("modneo-templates").setup({
-            include = { vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture") },
+            include = { false, vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture") },
             templates = {
                 ["*.txt"] = "skel.txt",
                 ["*.lua"] = "skel.lua",
@@ -86,5 +86,6 @@ describe("tests for modneo-templates.nvim commands", function()
             vim.cmd("TemplateApply! ftplugin.vim")
             assert.is_equal(line_count, vim.api.nvim_buf_line_count(buf))
             vim.cmd("bw! " .. buf)
-        end)    end)
+        end)
+    end)
 end)

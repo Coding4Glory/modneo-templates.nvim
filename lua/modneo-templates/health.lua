@@ -1,5 +1,5 @@
 --[[
-modneo-templates.nvim
+modneo-templates
 Copyright (C) 2025  Markus Hergenröder <markus@coding4glory.net>
 
 This program is free software: you can redistribute it and/or modify
