@@ -1,6 +1,9 @@
-# modneo-templates
+# tiny-templates.nvim
 
 Neovim plugin for simple file template usage
+
+> ⚠ Plugin has been retired and replaced with fork [modneo-templates](https://github.com/Coding3Glory/modneo-templates). ⚠
+> Repository has been kept to avoid broken dependencies.
 
 ## Setup 🚀and Configuration ⚙ 
 
@@ -8,7 +11,7 @@ Setup with Lazy
 
 ```lua
 return {
-    -- repo will be renamed according to new project name soon!
+    -- plugin got retired and replaced with fork Coding4Glory/modneo-templates
     "Coding4Glory/tiny-templates.nvim",
     -- default options, pass an empty table to use defaults
     opts = {
