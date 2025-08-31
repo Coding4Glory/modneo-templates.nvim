@@ -16,44 +16,128 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+---@param options Modneo.TemplatesOptions
+local function normalize_includes(options)
+    for i, dir in ipairs(options.include or {}) do
+        if dir == false then
+            goto continue
+        end
+        if vim.fs.abspath(dir) ~= dir then
+            options.include[i] = vim.fs.joinpath(vim.fn.stdpath("config"), dir)
+        end
+        ::continue::
+    end
+    return options
+end
+
+---adds skeletton files found in dir to templates with fitting patterns
+---@param dir string
+---@param options Modneo.TemplatesOptions
+local function add_skelettons_from_dir(dir, options)
+    local fileexp = vim.fs.joinpath(dir, "skel.*")
+    local skelettons = vim.fn.glob(fileexp, false, true, false)
+    for _, file in ipairs(skelettons) do
+        local tpl_name = vim.fs.basename(file)
+        local pattern = "*" .. tpl_name:match("%..*")
+        if options.templates[pattern] == nil then
+            options.templates[pattern] = tpl_name
+        end
+    end
+end
+
+local builtin_templates = vim.fs.joinpath(
+    vim.fn.stdpath('data'),
+    'lazy',
+    'modneo-templates.nvim',
+    'templates'
+)
+
+local user_templates = vim.fs.joinpath(
+    vim.fn.stdpath('config'),
+    'templates'
+)
+
 ---@class Modneo.TemplatesOptions
 local defaults = {
-    ---@type table
     ---a list of paths to search for templates, first template found will be used
     ---so list order is important
-    include = {
-        vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
-        vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'modneo-templates.nvim', 'templates')
-    },
     ---@type table
+    include = {
+        user_templates,
+        builtin_templates,
+    },
     ---A table with patterns and template file names.
     ---Patterns should be file names containing wildcards
-    ---e. g. `*.lua` or `ftplugin/*.vim`. 
+    ---e. g. `*.lua` or `ftplugin/*.vim`.
+    ---@type table
     templates = {
-        ['*.lua'] = 'skel.lua',
-        ['ftplugin/*.vim'] = 'ftplugin.vim',
+        ["*.lua"] = "skel.lua",
+        ["ftplugin/*.vim"] = "ftplugin.vim",
     },
-    ---@type boolean
     ---can be set to true to prevent automatic template loading for new files.
     ---Defaults to false since this is the primary use case for this plugin.
+    ---@type boolean
     no_autoload = false,
+    ---rutomatically adds files named `skel.*` found in template directories
+    ---as template for *.ext where _ext_ is the suffix of the _skel_ file.
+    ---Defaults to false to avoid adding during init.
+    ---@type boolean
+    auto_skelettons = false,
 }
 
 ---@class Modneo.TemplatesConfig
 ---@field options Modneo.TemplatesOptions
 local M = {}
 
+---adds skeletton files `skel.*` to the template list missing
+---in current templates mapping property. The extension will be taken from
+---the skeletton file.
+---
+---Templates will be added as simple file names.
+---This also avoids duplicate adding of files found in more than one directory.
+M.add_skelettons = function()
+    if M.options == nil then
+        error("cannot be called before init or setup")
+    end
+    for _, dir in ipairs(M.options.include) do
+        add_skelettons_from_dir(dir, M.options)
+    end
+    vim.g.modneo_templates_auto_skel_loaded = 1
+end
+
+---initializes the plugin with default settings
 ---@type function
 ---@return Modneo.TemplatesConfig
 M.init = function()
-    M.options = vim.tbl_deep_extend('keep', defaults, {})
+    M.options = vim.tbl_deep_extend("force", {}, defaults)
     return M
 end
 
+---initializes or resets the plugin with user options
 ---@param opts table table with user defined options
 ---@return Modneo.TemplatesOptions
 M.setup = function(opts)
-    M.options = vim.tbl_deep_extend('force', M.options or defaults, opts or {})
+    opts = normalize_includes(opts)
+    M.options = vim.tbl_deep_extend("force", M.options or {}, defaults, opts)
+    -- remove defaults if user templates are set manually or false is included
+    if
+        opts.include ~= nil
+        and (
+            vim.tbl_contains(opts.include, user_templates)
+            or vim.tbl_contains(opts.include, false)
+        )
+    then
+        M.options.include = vim.tbl_filter(function(v)
+            return type(v) == "string"
+        end, opts.include)
+    end
+    -- reset templates with settings if builtin templates are not included
+    if opts.templates ~= nil and not vim.tbl_contains(M.options.include, builtin_templates) then
+        M.options.templates = opts.templates
+    end
+    if M.options.auto_skelettons and vim.g.modneo_templates_auto_skel_loaded ~= 1 then
+        M.add_skelettons()
+    end
     return M.options
 end
 
