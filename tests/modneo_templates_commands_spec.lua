@@ -1,6 +1,6 @@
 describe("tests for modneo-templates.nvim commands", function()
     describe("with default config", function()
-        require("modneo-templates").setup()
+        require("modneo-templates").init()
         it("checks for default options", function()
             local options = require("modneo-templates.config").options
             assert.is_equal(2, table.maxn(options.include))

@@ -18,17 +18,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class Modneo.TemplatesPlugin
 return {
+    ---initializes the plugin
     init = function()
-        if vim.go.tiny_templates_loaded == true then return end
+        if vim.g.tiny_templates_loaded == true then return end
 
         require('modneo-templates.config').init()
-        require('tiny-templated.core').init()
+        require('modneo-templates.core').init()
         require('modneo-templates.commands').setup()
-        vim.go.tiny_templates_loaded = true
+        vim.g.tiny_templates_loaded = true
     end,
 
-	---@type function
-	---initializes the module by setting up auto commands for configured file patterns
+	---Initializes the module by setting up auto commands for configured files
+    ---patterns.
 	---@param opts Modneo.TemplatesOptions
 	setup = function(opts)
         require('modneo-templates.config').setup(opts)
@@ -37,4 +38,23 @@ return {
             require('modneo-templates.commands').setup()
         end
 	end,
+
+    ---Removes the auto commands and user commands so effectivately removes
+    ---the plugin.
+    unload = function()
+        require('modneo-templates.commands').unload()
+        require('modneo-templates.core').unload()
+        for _, mod in ipairs({
+            'modneo-templates.core',
+            'modneo-templates.common',
+            'modneo-templates.commands',
+            'modneo-templates.health',
+            'modneo-templates.config',
+            'modneo-templates',
+        }) do
+            if package.loaded[mod] ~= nil then
+                package.loaded[mod] = nil
+            end
+        end
+    end
 }

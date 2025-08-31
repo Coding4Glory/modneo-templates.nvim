@@ -47,12 +47,14 @@ M.load_at = function(template, position)
 	end
 end
 
+local au_group_name = 'modneo_templates'
+
 ---initialize the core module
 ---@return Modneo.Templates
 M.init = function()
 	M.options = require("modneo-templates.config").options
 
-	local template_group = vim.api.nvim_create_augroup("tiny_templates",
+	local template_group = vim.api.nvim_create_augroup(au_group_name,
         { clear = true })
 
 	if M.options.no_autoload then
@@ -83,6 +85,10 @@ M.init = function()
 	end
 
 	return M
+end
+
+M.unload = function()
+    vim.api.nvim_del_augroup_by_name(au_group_name)
 end
 
 return M

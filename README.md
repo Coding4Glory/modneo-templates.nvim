@@ -1,6 +1,6 @@
-# tiny.nvim templates support
+# modneo-templates
 
-Tiny module to support template usage
+Neovim plugin for simple file template usage
 
 ## Setup 🚀and Configuration ⚙ 
 
@@ -8,12 +8,13 @@ Setup with Lazy
 
 ```lua
 return {
+    -- repo will be renamed according to new project name soon!
     "Coding4Glory/tiny-templates.nvim",
     -- default options, pass an empty table to use defaults
     opts = {
         include = {
             vim.fs.joinpath(vim.fn.stdpath('config'), 'templates'),
-            vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'tiny-templates.nvim', 'templates')
+            vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy', 'modneo-templates.nvim', 'templates')
         },
         templates = {
             ['*.lua'] = 'skel.lua',
