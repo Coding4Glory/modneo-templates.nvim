@@ -18,6 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 local not_found = { type = "n/a" }
 
+local function get_added_template()
+    return vim.b.modneo_template_added
+end
+
+---@param t Modneo.Templates.Config.TemplateEntry
+local function set_added_template(t)
+    vim.b.modneo_template_added = t[1]
+end
+
 ---@class Modneo.Templates
 ---@field options Modneo.Templates.ConfigOptions
 local M = {}
@@ -43,7 +52,7 @@ M.find = function(filename)
 end
 
 ---loads the template at the given position
----@param template Modneo.Templates.Config.TempateEntry the template to apply
+---@param template Modneo.Templates.Config.TemplateEntry the template to apply
 ---@param position integer? the line to insert the template, defaults to 0 for first line
 M.load_at = function(template, position)
     position = position or 0
@@ -53,11 +62,17 @@ M.load_at = function(template, position)
     end
     local template_path = M.find(template[1])
     if template_path ~= nil then
-        if type(template_path) ~= "string" then
-            error("path must be string")
-        end
         vim.cmd(position .. "read " .. template_path)
-        vim.b.tiny_template_added = template[1]
+        set_added_template(template)
+        if template.replace ~= nil then
+            if type(template.replace[1]) == 'string' then
+                M.replace(template.replace)
+                return
+            end
+            for _, r in ipairs(template.replace) do
+                M.replace(r --[[@as Modneo.Templates.Config.ReplaceRule]])
+            end
+        end
     else
         vim.notify("Template: " .. (template[1] or "n/a") .. " not found", vim.log.levels.WARN)
     end
@@ -70,9 +85,6 @@ local au_group_name = "modneo_templates"
 ---@return integer the id of the buffer
 local function load_temp(filename)
     local tmp_buf = vim.api.nvim_create_buf(false, true)
-    if type(filename) == "table" then
-        error("filename cannot be table")
-    end
     vim.api.nvim_buf_call(tmp_buf, function()
         vim.cmd("0read " .. filename)
     end)
@@ -85,15 +97,15 @@ end
 ---@param buf integer the number of the buffer with the content
 ---@param formatstring string? a string to format the buffer, usually the comment string
 local function replace_line_with_buf(lnum, buf, formatstring)
-    formatstring = vim.fn.printf(formatstring or "%s", "\\1")
-    formatstring = vim.fn.substitute(formatstring, "/", "\\/", "")
+    formatstring = vim.fn.printf((formatstring or "%s"), "\\1")
+    formatstring = vim.fn.substitute(formatstring, "/", "\\\\/", "g")
 
     vim.api.nvim_buf_call(buf, function()
         vim.cmd("%s/\\(.*\\)/" .. formatstring)
     end)
     local replacement = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
     local curbuf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_buf_set_lines(curbuf, lnum, lnum + 1, true, replacement)
+    vim.api.nvim_buf_set_lines(curbuf, lnum - 1, lnum, true, replacement)
     vim.api.nvim_buf_delete(buf, { force = true })
 end
 
@@ -140,7 +152,7 @@ local function determin_rule_type(rule)
         return 'callback'
     end
 
-    if type(rule[2] == 'table') then
+    if type(rule[2]) == 'table' then
         return 'system'
     end
 
@@ -163,24 +175,45 @@ local function determin_rule_type(rule)
     return 'string'
 end
 
----@type table<string,fun(ctx:Modneo.Templates.Config.ReplaceContext,rhs:any)>
+---@type table<Modneo.Templates.Config.ReplaceRule.Kind,fun(ctx:Modneo.Templates.Config.ReplaceContext,rhs:any)>
 local replace_case = {
-    command = function(ctx, rhs)
+    ['command'] = function(_, rhs)
         local cmd = rhs:match('[^:].*')
         vim.cmd(cmd)
     end,
-    file = function (ctx, rhs)
+    ['file'] = function(ctx, rhs)
         replace_from_file(ctx.pattern, rhs)
     end,
-    callback = function(ctx, rhs)
+    ['callback'] = function(ctx, rhs)
         rhs(ctx)
     end,
     ---@param ctx Modneo.Templates.Config.ReplaceContext
     ---@param rhs string
-    string = function(ctx, rhs)
-        vim.cmd('%s/' .. ctx.pattern .. '/' .. rhs ..'/g')
-    end
+    ['string'] = function(ctx, rhs)
+        local rep = vim.fn.substitute(rhs, '/', '\\\\/', 'g')
+        vim.cmd('%s/' .. ctx.pattern .. '/' .. rep .. '/g')
+    end,
 }
+
+replace_case['system'] = function(ctx, rhs)
+    local result = vim.system(rhs, { text = true }):wait()
+    if result.code == 0 then
+        local content = vim.split(result.stdout:match('^(.*)\n?$'), '\n', { trimempty = false })
+        if #content > 1 then
+            local tmp_buf = vim.api.nvim_create_buf(false, true)
+            vim.api.nvim_buf_set_lines(tmp_buf, 0, -1, false, content)
+            replace_line_with_buf(vim.fn.search(ctx.pattern), tmp_buf)
+            return
+        end
+        replace_case['string'](ctx, result.stdout)
+    else
+        vim.notify("command '" ..
+            table.concat(rhs, ' ') ..
+            "' ended in: " ..
+            result.stderr,
+            vim.log.levels.ERROR)
+    end
+end
 
 ---performs the replacement
 ---@param rule Modneo.Templates.Config.ReplaceRule
@@ -188,9 +221,12 @@ M.replace = function(rule)
     local kind = determin_rule_type(rule)
     ---@type Modneo.Templates.Config.ReplaceContext
     local ctx = {
-        template = vim.b.tiny_template_added,
+        template = get_added_template(),
         pattern = rule[1]
     }
+    if replace_case[kind] == nil then
+        error('replacement rule kind ' .. (kind or 'nil') .. ' not supported')
+    end
     replace_case[kind](ctx, rule[2])
 end
 
@@ -209,8 +245,8 @@ M.init = function()
         vim.api.nvim_create_autocmd("BufNewFile", {
             pattern = p,
             group = template_group,
-            callback = function(args)
-                M.load_at(t)
+            callback = function()
+                M.load_at(t --[[@as Modneo.Templates.Config.TemplateEntry]])
             end,
         })
         vim.api.nvim_create_autocmd("BufRead", {
@@ -223,7 +259,8 @@ M.init = function()
                 if vim.api.nvim_buf_line_count(args.buf) > 1 then
                     return
                 end
-                M.load_at(t)
+                ---@diagnostic disable-next-line
+                M.load_at(t --[[@as Modneo.Templates.Config.TemplateEntry]])
             end,
         })
     end

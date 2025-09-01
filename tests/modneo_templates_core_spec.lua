@@ -48,14 +48,14 @@ describe("mimic default settings", function()
     end)
 end)
 
-describe("replace block after skeletton", function()
-    require("modneo-templates").setup({
-        include = { false, fixture_path },
-        templates = {
-            ["*.txt"] = { "with_replace.txt", replace = { ["{{ TO REPLACE }}"] = "skel.txt" } },
-        },
-    })
+describe("replacement after skeletton", function()
     it("uses a template with file replacement", function()
+        require("modneo-templates").setup({
+            include = { false, fixture_path },
+            templates = {
+                ["*.txt"] = { "with_replace.txt", replace = { "{{ TO REPLACE }}", "skel.txt" } },
+            },
+        })
         local compare_file = vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture", "with_replace.txt")
         vim.cmd("edit " .. compare_file)
         local compare_count = vim.api.nvim_buf_line_count(vim.fn.bufnr(compare_file))
@@ -66,6 +66,65 @@ describe("replace block after skeletton", function()
         vim.cmd("edit " .. filename)
         local buf = vim.fn.bufadd(filename)
         -- for some reason an empty line is added in the end
+        assert.is_nil(vim.api.nvim_buf_get_lines(buf, 0, -1, false))
         assert(vim.api.nvim_buf_line_count(buf) - 1 > compare_count, "Replacement not performed")
+        assert.equal(0, #vim.fn.matchbufline(buf, "{{ TO REPLACE }}", 1, '$'))
+    end)
+
+    it("uses a template with text replacement", function()
+        require("modneo-templates").setup({
+            include = { false, fixture_path },
+            templates = {
+                ["*.txt"] = { "with_replace.txt", replace = { "{{ TO REPLACE }}", "The new value" } },
+            },
+        })
+        local compare_file = vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture", "with_replace.txt")
+        vim.cmd("edit " .. compare_file)
+        local compare_count = vim.api.nvim_buf_line_count(vim.fn.bufnr(compare_file))
+        assert(compare_count > empty_count, "Compare file not properly loaded")
+        vim.api.nvim_buf_delete(vim.fn.bufnr(compare_file), { force = true })
+        local filename = "test.txt"
+        vim.cmd("edit " .. filename)
+        local buf = vim.fn.bufadd(filename)
+        assert.not_equal(0, #vim.fn.matchbufline(buf, "The new value", 1, '$'))
+    end)
+    describe("uses a template with system command replacement", function()
+        it("single line", function()
+            require("modneo-templates").setup({
+                include = { false, fixture_path },
+                templates = {
+                    ["*.txt"] = { "with_replace.txt", replace = { "{{ TO REPLACE }}", { "echo", "The", "new", "value" } } },
+                },
+            })
+            local compare_file = vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture", "with_replace.txt")
+            vim.cmd("edit " .. compare_file)
+            local compare_count = vim.api.nvim_buf_line_count(vim.fn.bufnr(compare_file))
+            assert(compare_count > empty_count, "Compare file not properly loaded")
+            vim.api.nvim_buf_delete(vim.fn.bufnr(compare_file), { force = true })
+            local filename = "test.txt"
+            vim.cmd("edit " .. filename)
+            local buf = vim.fn.bufadd(filename)
+            assert.not_equal(0, #vim.fn.matchbufline(buf, "The new value", 1, '$'))
+            assert.equal(0, #vim.fn.matchbufline(buf, "{{ TO REPLACE }}", 1, '$'))
+        end)
+        it("multi line", function()
+            require("modneo-templates").setup({
+                include = { false, fixture_path },
+                templates = {
+                    ["*.txt"] = { "with_replace.txt", replace = { "{{ TO REPLACE }}", { "echo", "-e","The", "new", "value", "\\n", "some", "other", "line"} } },
+                },
+            })
+            local compare_file = vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture", "with_replace.txt")
+            vim.cmd("edit " .. compare_file)
+            local compare_count = vim.api.nvim_buf_line_count(vim.fn.bufnr(compare_file))
+            assert(compare_count > empty_count, "Compare file not properly loaded")
+            vim.api.nvim_buf_delete(vim.fn.bufnr(compare_file), { force = true })
+            local filename = "test.txt"
+            vim.cmd("edit " .. filename)
+            local buf = vim.fn.bufadd(filename)
+            assert.not_equal(0, #vim.fn.matchbufline(buf, "The new value", 1, '$'))
+            assert.equal(0, #vim.fn.matchbufline(buf, "{{ TO REPLACE }}", 1, '$'))
+        end)
+
     end)
 end)

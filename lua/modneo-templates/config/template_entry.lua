@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
 ---@class Modneo.Templates.Config.ReplaceContext
----@field template string the name of the template originally called
+---@field template string? the name of the template originally loaded
 ---@field pattern string the pattern to replace
 
 ---@alias Modneo.Templates.Config.ReplaceRule.Kind
@@ -29,16 +29,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class Modneo.Templates.Config.ReplaceRule
 ---@field [1] string the pattern to search for replacement
----@field [2] string|fun(ctx:Modneo.Templates.Config.ReplaceContext):string the {rhs} for the replacement
+---@field [2] string|string[]|fun(ctx:Modneo.Templates.Config.ReplaceContext):string the {rhs} for the replacement
 ---@field [3] Modneo.Templates.Config.ReplaceRule.Kind? can be used to force a specific kind if auto detection fails or is not desired
 
 ---the type used to represent template entries after the configuration has
 ---been loaded.
----@class Modneo.Templates.Config.TempateEntry
+---@class Modneo.Templates.Config.TemplateEntry
 ---@field [1] string
 local M = {
-    ---a list of replace rules
-    ---@type Modneo.Templates.Config.ReplaceRule[]
+    ---a either a single replace rules or a list of it.
+    ---@type Modneo.Templates.Config.ReplaceRule|Modneo.Templates.Config.ReplaceRule[]
     replace = nil,
 }
 
@@ -47,7 +47,7 @@ local F = {}
 
 ---creates a new template entry instance from the given value
 ---@param val any
----@return Modneo.Templates.Config.TempateEntry
+---@return Modneo.Templates.Config.TemplateEntry
 F.new = function(val)
     if type(val) == 'string' then
         return vim.tbl_deep_extend('force', { val }, M)

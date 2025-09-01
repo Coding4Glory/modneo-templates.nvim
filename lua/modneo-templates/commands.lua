@@ -44,12 +44,20 @@ return {
             for p, t in pairs(core.options.templates) do
                 if cmdargs.args == p or vim.endswith(t[1], cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))
-                    core.load_at(t, line - 1)
+                    core.load_at(t --[[@as Modneo.Templates.Config.TemplateEntry]], line - 1)
                     return
                 end
             end
             err_msg(cmdargs.args)
         end, { nargs = 1, desc = 'Add template at cursor line' })
+
+        vim.api.nvim_create_user_command('TemplateReplace', function(cmdargs)
+            local core = require('modneo-templates.core')
+            if table.maxn(cmdargs.fargs) < 2 or table.maxn(cmdargs.fargs) > 3 then
+                error('command requires 2 or three parameters {pattern} {file} [kind]')
+            end
+            core.replace(cmdargs.fargs)
+        end, { nargs = '+', desc = 'Replace pattern with template'})
     end,
     ---removes the plugin commands
     unload = function()

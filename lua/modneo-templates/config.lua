@@ -85,7 +85,7 @@ local defaults = {
     ---skel.lua is not defined since auto_skelettons defaults to true.
     ---Paths can be absolute, in this case the include folders will not
     ---be searched.
-    ---@type table<string,string|Modneo.Templates.Config.TempateEntry>
+    ---@type table<string,string|Modneo.Templates.Config.TemplateEntry>
     templates = {
         ["ftplugin/*.vim"] = "ftplugin.vim",
     },
