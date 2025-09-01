@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
 ---normalizes the template paths in passed options
----@param options Modneo.TemplatesOptions
----@return Modneo.TemplatesOptions
+---@param options Modneo.Templates.ConfigOptions
+---@return Modneo.Templates.ConfigOptions
 local function normalize_includes(options)
     for i, dir in ipairs(options.include or {}) do
         if dir == false then
@@ -34,7 +34,7 @@ end
 
 ---adds skeletton files found in dir to templates with fitting patterns
 ---@param dir string
----@param options Modneo.TemplatesOptions
+---@param options Modneo.Templates.ConfigOptions
 local function add_skelettons_from_dir(dir, options)
     local fileexp = vim.fs.joinpath(dir, "skel.*")
     local skelettons = vim.fn.glob(fileexp, false, true, false)
@@ -48,9 +48,9 @@ local function add_skelettons_from_dir(dir, options)
 end
 
 ---normalizes the template entries in place
----@param options Modneo.TemplatesOptions
+---@param options Modneo.Templates.ConfigOptions
 local function normalize_templates(options)
-    local factory = require('modneo-templates.template_entry')
+    local factory = require('modneo-templates.config.template_entry')
     for pat, tpl in pairs(options.templates) do
         options.templates[pat] = factory.new(tpl)
     end
@@ -70,7 +70,7 @@ local user_templates = vim.fs.joinpath(
     'templates'
 )
 
----@class Modneo.TemplatesOptions
+---@class Modneo.Templates.ConfigOptions
 local defaults = {
     ---a list of paths to search for templates, first template found will be used
     ---so list order is important
@@ -85,7 +85,7 @@ local defaults = {
     ---skel.lua is not defined since auto_skelettons defaults to true.
     ---Paths can be absolute, in this case the include folders will not
     ---be searched.
-    ---@type table<string,string|Modneo.TemplatesTempateEntry>
+    ---@type table<string,string|Modneo.Templates.Config.TempateEntry>
     templates = {
         ["ftplugin/*.vim"] = "ftplugin.vim",
     },
@@ -100,8 +100,8 @@ local defaults = {
     auto_skeletons = true,
 }
 
----@class Modneo.TemplatesConfig
----@field options Modneo.TemplatesOptions
+---@class Modneo.Templates.Config
+---@field options Modneo.Templates.ConfigOptions
 local M = {}
 
 ---adds skeletton files `skel.*` to the template list missing
@@ -122,14 +122,14 @@ end
 
 ---initializes the plugin with default settings
 ---@type function
----@return Modneo.TemplatesOptions
+---@return Modneo.Templates.ConfigOptions
 M.init = function()
     return M.setup({})
 end
 
 ---initializes or resets the plugin with user options
 ---@param opts table table with user defined options
----@return Modneo.TemplatesOptions
+---@return Modneo.Templates.ConfigOptions
 M.setup = function(opts)
     opts = normalize_includes(opts or {})
     M.options = vim.tbl_deep_extend("force", M.options or {}, defaults, opts)

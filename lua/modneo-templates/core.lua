@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 local not_found = { type = "n/a" }
 
 ---@class Modneo.Templates
----@field options Modneo.TemplatesOptions
+---@field options Modneo.Templates.ConfigOptions
 local M = {}
 
 ---tries to find the full path of the template file
@@ -36,7 +36,7 @@ M.find = function(template)
 end
 
 ---loads the template at the given position
----@param template Modneo.TemplatesTempateEntry the template to apply
+---@param template Modneo.Templates.Config.TempateEntry the template to apply
 ---@param position integer? the line to insert the template, defaults to 0 for first line
 M.load_at = function(template, position)
     position = position or 0

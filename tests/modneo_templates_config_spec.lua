@@ -81,7 +81,7 @@ describe("uses specific options:", function()
                 },
                 templates = {
                     ["*.txt"] = {
-                        replace = { ["{{ TO REPLACE }}"] = "skel.txt" },
+                        replace = { { "{{ TO REPLACE }}", "skel.txt" } },
                         "with_replace.txt",
                     },
                 },

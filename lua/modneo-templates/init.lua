@@ -30,7 +30,7 @@ return {
 
     ---Initializes the module by setting up auto commands for configured files
     ---patterns.
-    ---@param opts Modneo.TemplatesOptions
+    ---@param opts Modneo.Templates.ConfigOptions
     setup = function(opts)
         require('modneo-templates.config').setup(opts)
         require('modneo-templates.core').init()
@@ -50,7 +50,7 @@ return {
             'modneo-templates.commands',
             'modneo-templates.health',
             'modneo-templates.config',
-            'modneo-templates.template_entry',
+            'modneo-templates.config.template_entry',
             'modneo-templates',
         }) do
             if package.loaded[mod] ~= nil then

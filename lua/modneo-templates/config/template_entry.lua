@@ -16,23 +16,33 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
----@class Modneo.TemplatesReplaceRule
+---@class Modneo.Templates.Config.ReplaceContext
+---@field template string the name of the template originally called
+---@field pattern string the pattern to replace
+
+---@class Modneo.Templates.Config.ReplaceRule
+---@field [1] string the pattern to search for replacement
+---@field command? string a vim command to execute and use it's result
+---@field file? string the name of a file found in a template folder
+---@field system? string a system command to execute and use it's result
+---@field callback? fun(ctx:Modneo.Templates.Config.ReplaceContext):string a function returning the string to use as replacement
 
 ---the type used to represent template entries after the configuration has
 ---been loaded.
----@class Modneo.TemplatesTempateEntry
+---@class Modneo.Templates.Config.TempateEntry
 ---@field [1] string
 local M = {
     ---a list of replace rules
+    ---@type Modneo.Templates.Config.ReplaceRule[]
     replace = nil,
 }
 
----@class Modneo.TemplatesTemplateEntryFactory
+---@class Modneo.Templates.Config.TemplateEntryFactory
 local F = {}
 
 ---creates a new template entry instance from the given value
 ---@param val any
----@return Modneo.TemplatesTempateEntry
+---@return Modneo.Templates.Config.TempateEntry
 F.new = function(val)
     if type(val) == 'string' then
         return vim.tbl_deep_extend('force', { val }, M)
@@ -46,7 +56,7 @@ F.new = function(val)
         return vim.tbl_deep_extend('keep', val, M)
     end
 
-    error("unexpected value in template config: type " .. type(val) .. " but only string and table allowed")
+    error("unexpected value in template config: type " .. type(val) .. " but only string and Modneo.TemplatesTempateEntry allowed")
 end
 
 return F
