@@ -30,7 +30,7 @@ return {
 
     ---Initializes the module by setting up auto commands for configured files
     ---patterns.
-    ---@param opts Modneo.Templates.ConfigOptions
+    ---@param opts Modneo.Templates.ConfigOptions?
     setup = function(opts)
         require('modneo-templates.config').setup(opts)
         require('modneo-templates.core').init()
@@ -57,5 +57,13 @@ return {
                 package.loaded[mod] = nil
             end
         end
+    end,
+    ---Calls unload and setup in sequence
+    ---@param opts Modneo.Templates.ConfigOptions?
+    ---this method is primarily for debug purpose calling setup should already
+    ---do the trick.
+    reload = function(opts)
+        unload()
+        setup(opts)
     end
 }
