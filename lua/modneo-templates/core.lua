@@ -91,15 +91,29 @@ local function load_temp(filename)
     return tmp_buf
 end
 
+local function comment_buffer(buf)
+    -- TODO: implement
+    warn('not implemented')
+end
+
+---sanitizes a string before pattern usage
+---@param str string
+---@return string
+local function sanitize_for_pattern(str)
+    return vim.fn.substitute(str, "/", "\\\\/", "g")
+end
+
+
 ---replaces the given line with the contens from buffer and deletes the
 ---buffer afterwards
 ---@param lnum integer number of line to replace
 ---@param buf integer the number of the buffer with the content
----@param formatstring string? a string to format the buffer, usually the comment string
-local function replace_line_with_buf(lnum, buf, formatstring)
-    formatstring = vim.fn.printf((formatstring or "%s"), "\\1")
-    formatstring = vim.fn.substitute(formatstring, "/", "\\\\/", "g")
-
+local function replace_line_with_buf(lnum, buf)
+    local commentstring = vim.bo.commentstring or "%s"
+    if commentstring == "" then
+        commentstring = "%s"
+    end
+    local formatstring = sanitize_for_pattern(vim.fn.printf(commentstring, "\\1"))
     vim.api.nvim_buf_call(buf, function()
         vim.cmd("%s/\\(.*\\)/" .. formatstring)
     end)
@@ -109,32 +123,38 @@ local function replace_line_with_buf(lnum, buf, formatstring)
     vim.api.nvim_buf_delete(buf, { force = true })
 end
 
----replaces the line containing *what* with the contents of filename
----@param what string
----@param filename string
-local function replace_from_file(what, filename)
-    local tmp_buf = load_temp(filename)
-    local comment_string = vim.bo.commentstring or vim.o.commentstring or ""
-    local commented = what
-    if comment_string ~= nil and comment_string ~= "" then
-        commented = vim.fn.printf(comment_string, what)
+local function get_search_pattern(pattern)
+    local commentstring = vim.bo.commentstring or "%s"
+    local format_parts = vim.split(commentstring, "%s", { trimempty = true })
+    if #format_parts == 0 then
+        return sanitize_for_pattern(pattern)
+    end
+    if #format_parts == 1 then
+        ---@diagnostic disable-next-line
+        return sanitize_for_pattern(vim.fn.printf("\\(?:%s\\)\\?%s", format_parts[1], pattern))
+    end
+    if #format_parts == 2 then
+        ---@diagnostic disable-next-line
+        return sanitize_for_pattern(vim.fn.printf("\\(?:%s\\)\\?%s\\(?:%s\\)\\?", format_parts[1], pattern, format_parts[2]))
     end
 
-    local current_line_nr = 1
-    while current_line_nr < vim.api.nvim_buf_line_count(tmp_buf) do
-        local line = vim.fn.getbufoneline(tmp_buf, current_line_nr)
-        if line == commented then
-            replace_line_with_buf(current_line_nr, tmp_buf, comment_string)
-            return
-        end
-        if line:match(what) then
-            replace_line_with_buf(current_line_nr, tmp_buf)
-            return
-        end
+end
 
-        current_line_nr = current_line_nr + 1
+---replaces the line containing *what* with the contents of filename
+---@param pattern string
+---@param filename string
+local function replace_from_file(pattern, filename)
+    if vim.fs.abspath(filename) ~= filename then
+        error('absolute path expected, got ' .. filename)
+    end
+    local search_pattern = get_search_pattern(pattern)
+    local lnum = vim.fn.search(pattern, 'cn')
+    if lnum > 0 then
+        local tmp_buf = load_temp(filename)
+        replace_line_with_buf(lnum, tmp_buf)
     end
 end
+
 
 ---determines the kind of the rule
 ---@param rule Modneo.Templates.Config.ReplaceRule

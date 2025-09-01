@@ -66,7 +66,6 @@ describe("replacement after skeletton", function()
         vim.cmd("edit " .. filename)
         local buf = vim.fn.bufadd(filename)
         -- for some reason an empty line is added in the end
-        assert.is_nil(vim.api.nvim_buf_get_lines(buf, 0, -1, false))
         assert(vim.api.nvim_buf_line_count(buf) - 1 > compare_count, "Replacement not performed")
         assert.equal(0, #vim.fn.matchbufline(buf, "{{ TO REPLACE }}", 1, '$'))
     end)
