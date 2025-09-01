@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@alias Modneo.Templates.Config.ReplaceRule.Kind
 ---| 'command' ensures the value will be treated as command
 ---| 'file' ensures the value will be treated as file
+---| 'multiline' overrides the default behaviour for tables to append a multiline string
 ---| 'system' ensures the value will be treated as system command
 ---| 'string' ensures the value will be treated as simple string
 ---| 'callback' not require to be specified, will always be detected correctly
@@ -36,11 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---been loaded.
 ---@class Modneo.Templates.Config.TemplateEntry
 ---@field [1] string
-local M = {
-    ---a either a single replace rules or a list of it.
-    ---@type Modneo.Templates.Config.ReplaceRule|Modneo.Templates.Config.ReplaceRule[]
-    replace = nil,
-}
+---@field replace  Modneo.Templates.Config.ReplaceRule|Modneo.Templates.Config.ReplaceRule[]
 
 ---@class Modneo.Templates.Config.TemplateEntryFactory
 local F = {}
@@ -50,18 +47,33 @@ local F = {}
 ---@return Modneo.Templates.Config.TemplateEntry
 F.new = function(val)
     if type(val) == 'string' then
-        return vim.tbl_deep_extend('force', { val }, M)
+        return { val }
     end
 
-
-    if type(val) == "table" then
-        if type(val[1]) ~= "string" then
-            error("template config must start with filename at first position")
+    -- TODO: replace errors with warning
+    if type(val) == 'table' then
+        if type(val[1]) ~= 'string' then
+            error(
+                'template rule must start with filename at first indexed position'
+            )
         end
-        return vim.tbl_deep_extend('keep', val, M)
+        -- TODO: get this part of validation working
+        -- can someone explain my why following code failes if val.replace is nil with first error message?
+        -- if (val.replace ~= nil and val.replace ~= 'table') then
+        --     error("replace config must be a rule or list or rules got " .. vim.inspect(vim.replace))
+        --     local check_val = type(val.replace[1])
+        --     if check_val ~= 'string' and check_val ~= 'table' then
+        --         error("invalid replace rule")
+        --     end
+        -- end
+        return val
     end
 
-    error("unexpected value in template config: type " .. type(val) .. " but only string and Modneo.TemplatesTempateEntry allowed")
+    error(
+        'unexpected value in template config: type '
+            .. type(val)
+            .. ' but only string and Modneo.TemplatesTempateEntry allowed'
+    )
 end
 
 return F

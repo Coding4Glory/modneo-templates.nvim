@@ -2,7 +2,7 @@
 
 Neovim plugin for simple file template usage
 
-## Setup 🚀and Configuration ⚙ 
+## Setup 🚀and Configuration ⚙
 
 Setup with Lazy
 

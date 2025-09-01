@@ -129,7 +129,7 @@ end
 
 ---initializes or resets the plugin with user options
 ---@param opts table table with user defined options
----@return Modneo.Templates.ConfigOptions
+---@return Modneo.Templates.ConfigOptions?
 M.setup = function(opts)
     opts = normalize_includes(opts or {})
     M.options = vim.tbl_deep_extend("force", M.options or {}, defaults, opts)
