@@ -50,7 +50,7 @@ M.load_at = function(template, position)
             error("path must be string")
         end
         vim.cmd(position .. "read " .. template_path)
-        vim.b.tiny_template_added = template
+        vim.b.tiny_template_added = template[1]
     else
         vim.notify("Template: " .. (template[1] or "n/a") .. " not found", vim.log.levels.WARN)
     end
