@@ -20,12 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@field template string the name of the template originally called
 ---@field pattern string the pattern to replace
 
+---@alias Modneo.Templates.Config.ReplaceRule.Kind
+---| 'command' ensures the value will be treated as command
+---| 'file' ensures the value will be treated as file
+---| 'system' ensures the value will be treated as system command
+---| 'string' ensures the value will be treated as simple string
+---| 'callback' not require to be specified, will always be detected correctly
+
 ---@class Modneo.Templates.Config.ReplaceRule
 ---@field [1] string the pattern to search for replacement
----@field command? string a vim command to execute and use it's result
----@field file? string the name of a file found in a template folder
----@field system? string a system command to execute and use it's result
----@field callback? fun(ctx:Modneo.Templates.Config.ReplaceContext):string a function returning the string to use as replacement
+---@field [2] string|fun(ctx:Modneo.Templates.Config.ReplaceContext):string the {rhs} for the replacement
+---@field [3] Modneo.Templates.Config.ReplaceRule.Kind? can be used to force a specific kind if auto detection fails or is not desired
 
 ---the type used to represent template entries after the configuration has
 ---been loaded.

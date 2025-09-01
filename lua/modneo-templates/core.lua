@@ -23,11 +23,18 @@ local not_found = { type = "n/a" }
 local M = {}
 
 ---tries to find the full path of the template file
----@param template string the filename of the template
+---@param filename string simple filename of the template or relative path from include directory
 ---@return string|nil the path if found, otherwise nil
-M.find = function(template)
+M.find = function(filename)
+    if vim.fs.abspath(filename) == filename then
+        if (vim.uv.fs_stat(filename) or not_found).type == "file" then
+            return filename
+        end
+        return nil
+    end
+
     for _, p in ipairs(M.options.include) do
-        local template_path = vim.fs.joinpath(p, template)
+        local template_path = vim.fs.joinpath(p, filename)
         if (vim.uv.fs_stat(template_path) or not_found).type == "file" then
             return template_path
         end
@@ -117,22 +124,74 @@ local function replace_from_file(what, filename)
     end
 end
 
+---determines the kind of the rule
+---@param rule Modneo.Templates.Config.ReplaceRule
+---@return Modneo.Templates.Config.ReplaceRule.Kind
+---if the returned type is file, the second value is replaced with the absolute path
+local function determin_rule_type(rule)
+    if #rule == 3 then
+        if type(rule[3]) ~= 'string' then
+            error('Third element in replacement rule must be a string. See Modneo.Templates.Config.ReplaceRule.Kind')
+        end
+        return rule[3]
+    end
+
+    if type(rule[2]) == 'function' then
+        return 'callback'
+    end
+
+    if type(rule[2] == 'table') then
+        return 'system'
+    end
+
+    if type(rule[2]) ~= 'string' then
+        error('second value in rule is expected to be string, list of strings or callback')
+    end
+
+    ---@diagnostic disable-next-line
+    if rule[2]:match('^:.*') ~= nil then
+        return 'command'
+    end
+
+    ---@diagnostic disable-next-line
+    local other_template = M.find(rule[2])
+    if other_template ~= nil then
+        rule[2] = other_template
+        return 'file'
+    end
+
+    return 'string'
+end
+
+---@type table<string,fun(ctx:Modneo.Templates.Config.ReplaceContext,rhs:any)>
+local replace_case = {
+    command = function(ctx, rhs)
+        local cmd = rhs:match('[^:].*')
+        vim.cmd(cmd)
+    end,
+    file = function (ctx, rhs)
+        replace_from_file(ctx.pattern, rhs)
+    end,
+    callback = function(ctx, rhs)
+        rhs(ctx)
+    end,
+    ---@param ctx Modneo.Templates.Config.ReplaceContext
+    ---@param rhs string
+    string = function(ctx, rhs)
+        vim.cmd('%s/' .. ctx.pattern .. '/' .. rhs ..'/g')
+    end
+}
+
 ---performs the replacement
----@param what string the pattern to replace
----@param with string string or other template
-M.replace = function(what, with)
-    if type(what) == "table" then
-        error("what cannot be table")
-    end
-    if type(with) == "table" then
-        error("with cannot be table")
-    end
-    local other_template = M.find(with)
-    if other_template == nil then
-        vim.cmd("%s/" .. what .. "/" .. with .. "/g")
-        return
-    end
-    replace_from_file(what, other_template)
+---@param rule Modneo.Templates.Config.ReplaceRule
+M.replace = function(rule)
+    local kind = determin_rule_type(rule)
+    ---@type Modneo.Templates.Config.ReplaceContext
+    local ctx = {
+        template = vim.b.tiny_template_added,
+        pattern = rule[1]
+    }
+    replace_case[kind](ctx, rule[2])
 end
 
 ---initialize the core module

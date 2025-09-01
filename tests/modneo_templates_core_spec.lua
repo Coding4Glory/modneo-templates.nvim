@@ -65,6 +65,7 @@ describe("replace block after skeletton", function()
         local filename = "test.txt"
         vim.cmd("edit " .. filename)
         local buf = vim.fn.bufadd(filename)
-        assert(vim.api.nvim_buf_line_count(buf) > compare_count, "there are no lines!")
+        -- for some reason an empty line is added in the end
+        assert(vim.api.nvim_buf_line_count(buf) - 1 > compare_count, "Replacement not performed")
     end)
 end)
