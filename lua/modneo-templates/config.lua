@@ -69,9 +69,9 @@ local defaults = {
     ---A table with patterns and template file names.
     ---Patterns should be file names containing wildcards
     ---e. g. `*.lua` or `ftplugin/*.vim`.
+    ---skel.lua is not defined since auto_skelettons defaults to true.
     ---@type table
     templates = {
-        ["*.lua"] = "skel.lua",
         ["ftplugin/*.vim"] = "ftplugin.vim",
     },
     ---can be set to true to prevent automatic template loading for new files.
@@ -82,7 +82,7 @@ local defaults = {
     ---as template for *.ext where _ext_ is the suffix of the _skel_ file.
     ---Defaults to false to avoid adding during init.
     ---@type boolean
-    auto_skelettons = false,
+    auto_skelettons = true,
 }
 
 ---@class Modneo.TemplatesConfig
@@ -107,10 +107,9 @@ end
 
 ---initializes the plugin with default settings
 ---@type function
----@return Modneo.TemplatesConfig
+---@return Modneo.TemplatesOptions
 M.init = function()
-    M.options = vim.tbl_deep_extend("force", {}, defaults)
-    return M
+    return M.setup({})
 end
 
 ---initializes or resets the plugin with user options
@@ -134,6 +133,7 @@ M.setup = function(opts)
     -- reset templates with settings if builtin templates are not included
     if opts.templates ~= nil and not vim.tbl_contains(M.options.include, builtin_templates) then
         M.options.templates = opts.templates
+        vim.g.modneo_templates_auto_skel_loaded = 0
     end
     if M.options.auto_skelettons and vim.g.modneo_templates_auto_skel_loaded ~= 1 then
         M.add_skelettons()

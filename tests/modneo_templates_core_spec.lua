@@ -1,5 +1,5 @@
 local empty_count = 1
-local defaults = require('modneo-templates.config').init().options
+local defaults = require('modneo-templates.config').init()
 require('plenary.busted')
 
 describe("fixture/skel.txt only", function()
@@ -8,7 +8,8 @@ describe("fixture/skel.txt only", function()
             false, -- remove default paths to avoid interference from installed plugin
             vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture")
         },
-        templates = { ['*.txt'] = 'skel.txt' }
+        templates = { ['*.txt'] = 'skel.txt' },
+        auto_skelettons = false
     })
 
     it("creates an empty buffer", function()

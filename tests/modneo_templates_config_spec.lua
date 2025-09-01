@@ -1,15 +1,19 @@
+require('plenary.busted')
+
 describe('initialize with defaults:', function()
     it ('has options set', function()
-        local config = require('modneo-templates.config').init()
-        assert.not_nil(config.options)
-        assert.not_nil(config.options.templates)
-        assert.not_nil(config.options.include)
-        assert.is_false(config.options.auto_skelettons)
+        local options = require('modneo-templates.config').init()
+        -- assert.is_nil(config)
+        assert.not_nil(options)
+        assert.not_nil(options.templates)
+        assert.not_nil(options.include)
+        assert.is_true(options.auto_skelettons)
+        assert.not_nil(options.templates['*.lua'])
     end)
 end)
 
 describe('setup with custom:', function()
-    local default_paths = require('modneo-templates.config').init().options.include
+    local default_paths = require('modneo-templates.config').init().include
     local fixture_path = vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture")
     it ('paths are normalized', function()
         local options = require('modneo-templates.config').setup({
@@ -45,7 +49,6 @@ describe('setup with custom:', function()
                 fixture_path
             },
             templates = {},
-            auto_skelettons = true,
         })
         assert.is_true(options.auto_skelettons)
         assert.is_equal(1, vim.g.modneo_templates_auto_skel_loaded)
