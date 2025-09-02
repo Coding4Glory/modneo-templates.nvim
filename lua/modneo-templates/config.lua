@@ -70,6 +70,8 @@ local defaults = {
     ---Patterns should be file names containing wildcards
     ---e. g. `*.lua` or `ftplugin/*.vim`.
     ---skel.lua is not defined since auto_skelettons defaults to true.
+    ---Paths can be absolute, in this case the include folders will not
+    ---be searched.
     ---@type table
     templates = {
         ["ftplugin/*.vim"] = "ftplugin.vim",
@@ -82,7 +84,7 @@ local defaults = {
     ---as template for *.ext where _ext_ is the suffix of the _skel_ file.
     ---Defaults to false to avoid adding during init.
     ---@type boolean
-    auto_skelettons = true,
+    auto_skeletons = true,
 }
 
 ---@class Modneo.TemplatesConfig
@@ -95,7 +97,7 @@ local M = {}
 ---
 ---Templates will be added as simple file names.
 ---This also avoids duplicate adding of files found in more than one directory.
-M.add_skelettons = function()
+M.add_skeletons = function()
     if M.options == nil then
         error("cannot be called before init or setup")
     end
@@ -135,8 +137,8 @@ M.setup = function(opts)
         M.options.templates = opts.templates
         vim.g.modneo_templates_auto_skel_loaded = 0
     end
-    if M.options.auto_skelettons and vim.g.modneo_templates_auto_skel_loaded ~= 1 then
-        M.add_skelettons()
+    if M.options.auto_skeletons and vim.g.modneo_templates_auto_skel_loaded ~= 1 then
+        M.add_skeletons()
     end
     return M.options
 end

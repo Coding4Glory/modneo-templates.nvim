@@ -9,7 +9,7 @@ describe("fixture/skel.txt only", function()
             vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture")
         },
         templates = { ['*.txt'] = 'skel.txt' },
-        auto_skelettons = false
+        auto_skeletons = false
     })
 
     it("creates an empty buffer", function()
