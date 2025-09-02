@@ -30,7 +30,7 @@ return {
                 vim.cmd('%d')
             end
             if vim.fn.line('$') > 1 then return end
-            for p, t in pairs(core.options.templates) do
+            for p, t in core.options.templates_iter() do
                 if cmdargs.args == p or vim.endswith(t[1], cmdargs.args) then
                     core.load_at(t)
                     return
@@ -41,10 +41,10 @@ return {
 
         vim.api.nvim_create_user_command('TemplateAdd', function(cmdargs)
             local core = require('modneo-templates.core')
-            for p, t in pairs(core.options.templates) do
+            for p, t in core.options.templates_iter() do
                 if cmdargs.args == p or vim.endswith(t[1], cmdargs.args) then
                     local _, line, _, _ = unpack(vim.fn.getpos('.'))
-                    core.load_at(t --[[@as Modneo.Templates.Config.TemplateEntry]], line - 1)
+                    core.load_at(t, line - 1)
                     return
                 end
             end
@@ -53,11 +53,21 @@ return {
 
         vim.api.nvim_create_user_command('TemplateReplace', function(cmdargs)
             local core = require('modneo-templates.core')
-            if table.maxn(cmdargs.fargs) < 2 or table.maxn(cmdargs.fargs) > 3 then
-                error('command requires 2 or three parameters {pattern} {file} [kind]')
+            if table.maxn(cmdargs.fargs) < 2 then
+                error('command requires 2 parameters {pattern} {file}')
             end
-            core.replace(cmdargs.fargs)
-        end, { nargs = '+', desc = 'Replace pattern with template'})
+            local filepath = core.find(cmdargs.fargs[#cmdargs.fargs])
+            if filepath == nil then
+                error('file ' .. fcmdargs.fargs[#cmdargs.fargs] .. ' not found in templates')
+            end
+            ---@type Modneo.Templates.Config.ReplaceRule
+            local rule = {
+                table.concat(cmdargs.fargs, ' ', 1, #cmdargs.fargs - 1),
+                filepath,
+                'file'
+            }
+            core.replace(rule)
+        end, { nargs = '+', desc = 'Replace pattern with template' })
     end,
     ---removes the plugin commands
     unload = function()

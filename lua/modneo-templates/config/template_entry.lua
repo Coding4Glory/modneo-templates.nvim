@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class Modneo.Templates.Config.ReplaceRule
 ---@field [1] string the pattern to search for replacement
----@field [2] string|string[]|fun(ctx:Modneo.Templates.Config.ReplaceContext):string the {rhs} for the replacement
+---@field [2] string|string[]|fun(ctx:Modneo.Templates.Config.ReplaceContext):string|string[]|nil the {rhs} for the replacement if function did not perform the replacement already
 ---@field [3] Modneo.Templates.Config.ReplaceRule.Kind? can be used to force a specific kind if auto detection fails or is not desired
 
 ---the type used to represent template entries after the configuration has
@@ -57,15 +57,13 @@ F.new = function(val)
                 'template rule must start with filename at first indexed position'
             )
         end
-        -- TODO: get this part of validation working
-        -- can someone explain my why following code failes if val.replace is nil with first error message?
-        -- if (val.replace ~= nil and val.replace ~= 'table') then
-        --     error("replace config must be a rule or list or rules got " .. vim.inspect(vim.replace))
-        --     local check_val = type(val.replace[1])
-        --     if check_val ~= 'string' and check_val ~= 'table' then
-        --         error("invalid replace rule")
-        --     end
-        -- end
+        if (val.replace ~= nil and type(val.replace) ~= 'table') then
+            error("replace config must be a rule or list or rules got " .. vim.inspect(vim.replace))
+            local check_val = type(val.replace[1])
+            if check_val ~= 'string' and check_val ~= 'table' then
+                error("invalid replace rule")
+            end
+        end
         return val
     end
 

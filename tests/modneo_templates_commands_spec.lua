@@ -88,4 +88,21 @@ describe("tests for modneo-templates.nvim commands", function()
             vim.cmd("bw! " .. buf)
         end)
     end)
+
+    describe('replace', function()
+        it('in current buffer', function()
+            require("modneo-templates").setup({
+                include = { false, vim.fs.joinpath((vim.uv or vim.loop).cwd(), "tests", "fixture") },
+                templates = {
+                    ["*.txt"] = "with_replace.txt",
+                },
+            })
+            local filename = "test_manual_replace.txt"
+            vim.cmd("edit " .. filename)
+            local buf = vim.fn.bufadd(filename)
+            vim.cmd("TemplateReplace {{ TO REPLACE }} skel.txt")
+            assert.is_equal(0, #vim.fn.matchbufline(buf, "{{ TO REPLACE }}", 1, '$'))
+            assert.not_equal(0, #vim.fn.matchbufline(buf, "Hello World!", 1, '$'))
+        end)
+    end)
 end)

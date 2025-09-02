@@ -20,7 +20,7 @@ Setupwith Lazy
 >lua
     return {
         -- repo will be renamed according to new project name soon!
-        "Coding4Glory/modneo-templates.nvim",
+        "Coding4Glory/modneo-templates",
         -- default options, pass an empty table to use defaults
         opts = {
             ---a list of paths to search for templates, first template found will be used

@@ -71,6 +71,7 @@ local user_templates = vim.fs.joinpath(
 )
 
 ---@class Modneo.Templates.ConfigOptions
+---@field templates_iter Iterator<string,Modneo.Templates.ConfigOptions>?
 local defaults = {
     ---a list of paths to search for templates, first template found will be used
     ---so list order is important
@@ -128,8 +129,8 @@ M.init = function()
 end
 
 ---initializes or resets the plugin with user options
----@param opts table table with user defined options
----@return Modneo.Templates.ConfigOptions?
+---@param opts Modneo.Templates.ConfigOptions? user defined options
+---@return Modneo.Templates.ConfigOptions
 M.setup = function(opts)
     opts = normalize_includes(opts or {})
     M.options = vim.tbl_deep_extend("force", M.options or {}, defaults, opts)
@@ -154,6 +155,9 @@ M.setup = function(opts)
         M.add_skeletons()
     end
     normalize_templates(M.options)
+    M.options.templates_iter = function()
+        return pairs(M.options.templates)
+    end
     return M.options
 end
 
