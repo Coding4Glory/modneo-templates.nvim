@@ -262,6 +262,9 @@ end
 ---@return Modneo.Templates
 M.init = function()
     M.options = require("modneo-templates.config").options
+    if M.options == nil then
+        error("configuration not initialized")
+    end
 
     local template_group = vim.api.nvim_create_augroup(au_group_name, { clear = true })
 

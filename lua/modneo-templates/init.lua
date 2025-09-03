@@ -20,12 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 return {
     ---initializes the plugin
     init = function()
-        if vim.g.tiny_templates_loaded == true then return end
+        if vim.g.modneo_templates_loaded == true then return end
 
         require('modneo-templates.config').init()
         require('modneo-templates.core').init()
         require('modneo-templates.commands').setup()
-        vim.g.tiny_templates_loaded = true
+        vim.g.modneo_templates_loaded = true
     end,
 
     ---Initializes the module by setting up auto commands for configured files
@@ -57,13 +57,14 @@ return {
                 package.loaded[mod] = nil
             end
         end
+        vim.g.modneo_templates_loaded = nil
     end,
-    ---Calls unload and setup in sequence
-    ---@param opts Modneo.Templates.ConfigOptions?
-    ---this method is primarily for debug purpose calling setup should already
-    ---do the trick.
-    reload = function(opts)
-        unload()
-        setup(opts)
-    end
+    -- ---Calls unload and setup in sequence
+    -- ---@param opts Modneo.Templates.ConfigOptions?
+    -- ---this method is primarily for debug purpose calling setup should already
+    -- ---do the trick.
+    -- reload = function(opts)
+    --     unload()
+    --     setup(opts)
+    -- end
 }

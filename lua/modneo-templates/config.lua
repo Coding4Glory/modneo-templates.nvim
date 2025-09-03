@@ -16,46 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
----normalizes the template paths in passed options
----@param options Modneo.Templates.ConfigOptions
----@return Modneo.Templates.ConfigOptions
-local function normalize_includes(options)
-    for i, dir in ipairs(options.include or {}) do
-        if dir == false then
-            goto continue
-        end
-        if vim.fs.abspath(dir) ~= dir then
-            options.include[i] = vim.fs.joinpath(vim.fn.stdpath("config"), dir)
-        end
-        ::continue::
-    end
-    return options
-end
-
----adds skeletton files found in dir to templates with fitting patterns
----@param dir string
----@param options Modneo.Templates.ConfigOptions
-local function add_skelettons_from_dir(dir, options)
-    local fileexp = vim.fs.joinpath(dir, "skel.*")
-    local skelettons = vim.fn.glob(fileexp, false, true, false)
-    for _, file in ipairs(skelettons) do
-        local tpl_name = vim.fs.basename(file)
-        local pattern = "*" .. tpl_name:match("%..*")
-        if options.templates[pattern] == nil then
-            options.templates[pattern] = tpl_name
-        end
-    end
-end
-
----normalizes the template entries in place
----@param options Modneo.Templates.ConfigOptions
-local function normalize_templates(options)
-    local factory = require('modneo-templates.config.template_entry')
-    for pat, tpl in pairs(options.templates) do
-        options.templates[pat] = factory.new(tpl)
-    end
-end
-
 ---contains the default path for builtin templates when installed with lazy
 local builtin_templates = vim.fs.joinpath(
     vim.fn.stdpath('data'),
@@ -100,6 +60,46 @@ local defaults = {
     ---@type boolean
     auto_skeletons = true,
 }
+
+---normalizes the template paths in passed options
+---@param options Modneo.Templates.ConfigOptions
+---@return Modneo.Templates.ConfigOptions
+local function normalize_includes(options)
+    for i, dir in ipairs(options.include or {}) do
+        if dir == false then
+            goto continue
+        end
+        if vim.fs.abspath(dir) ~= dir then
+            options.include[i] = vim.fs.joinpath(vim.fn.stdpath("config"), dir)
+        end
+        ::continue::
+    end
+    return options
+end
+
+---adds skeletton files found in dir to templates with fitting patterns
+---@param dir string
+---@param options Modneo.Templates.ConfigOptions
+local function add_skelettons_from_dir(dir, options)
+    local fileexp = vim.fs.joinpath(dir, "skel.*")
+    local skelettons = vim.fn.glob(fileexp, false, true, false)
+    for _, file in ipairs(skelettons) do
+        local tpl_name = vim.fs.basename(file)
+        local pattern = "*" .. tpl_name:match("%..*")
+        if options.templates[pattern] == nil then
+            options.templates[pattern] = tpl_name
+        end
+    end
+end
+
+---normalizes the template entries in place
+---@param options Modneo.Templates.ConfigOptions
+local function normalize_templates(options)
+    local factory = require('modneo-templates.config.template_entry')
+    for pat, tpl in pairs(options.templates) do
+        options.templates[pat] = factory.new(tpl)
+    end
+end
 
 ---@class Modneo.Templates.Config
 ---@field options Modneo.Templates.ConfigOptions
