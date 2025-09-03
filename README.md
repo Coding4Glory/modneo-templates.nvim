@@ -103,8 +103,8 @@ Via the _type_ it's possible to provide a hint if the a value is miss interprete
 opts = {
     templates = {
         ['*.c'] = {
-            'skel.c',
-                -- simply replace a text
+           'skel.c',
+            -- simply replace a text
             replace = { '{{ AUTHOR }}', 'John Doe' }
         }
     }
@@ -134,13 +134,35 @@ opts = {
 
 ```lua
 opts = {
-    templates
+    templates = {
+        ['*.c'] = {
+            'skel.c',
+            replace = { 'What ever', function(ctx) {
+                -- ctx.template contains the initially loaded template
+                -- ctx.pattern holds the search pattern
+                return 'with this'
+            }
+        }
+    }
 }
 ```
 
-****
+**Using a command**
 
-##
+```lua
+opts = {
+    templates = {
+        ['*.c'] = {
+            'skel.c',
+            replace = { 'What ever', function(ctx) {
+                -- ctx.template contains the initially loaded template
+                -- ctx.pattern holds the search pattern
+                return 'with this'
+            }
+        }
+    }
+}
+```
 
 ### Template Files
 
@@ -153,7 +175,7 @@ If not changed via options place your templates into the template directory, def
 
 ```vimdoc
                                                                 *TemplateApply*
-:TemplateApply[!] {arg}      Fills the buffer with the template. If the buffer
+:TemplateApply[!] {name}     Fills the buffer with the template. If the buffer
                              already contains more than one line, the command
                              will do nothing. Use bang to clear the file in
                              advance which will override the buffer with the
@@ -161,8 +183,12 @@ If not changed via options place your templates into the template directory, def
                              found, the buffer will still be cleared.
 
                                                                   *TemplateAdd*
-:TemplateAdd {arg}           Adds the contents of the template at the cursor
+:TemplateAdd {name}          Adds the contents of the template at the cursor
                              line.
+
+:TemplateReplase {pattern} {name}     Performs a replacement of pattern with
+                                      the contents of the template specified
+                                      by name.
 
 Both commands require the same argument with is either the pattern used to
 match the new file or the simple file name of the template, examples based on
