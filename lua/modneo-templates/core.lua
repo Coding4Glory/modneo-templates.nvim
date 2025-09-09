@@ -219,7 +219,7 @@ end
 replace_case['system'] = function(ctx, rhs)
     local result = vim.system(rhs, { text = true }):wait()
     if result.code == 0 then
-        local content = vim.split(result.stdout:match('^(.*)\n?$'), '\n', { trimempty = false })
+        local content = vim.split(result.stdout:gsub('\n$', ''), '\n', { trimempty = false })
         if #content > 1 then
             replace_case['multiline'](ctx, content)
             return

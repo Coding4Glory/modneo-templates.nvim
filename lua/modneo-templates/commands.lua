@@ -58,7 +58,7 @@ return {
             end
             local filepath = core.find(cmdargs.fargs[#cmdargs.fargs])
             if filepath == nil then
-                error('file ' .. fcmdargs.fargs[#cmdargs.fargs] .. ' not found in templates')
+                error('file ' .. cmdargs.fargs[#cmdargs.fargs] .. ' not found in templates')
             end
             ---@type Modneo.Templates.Config.ReplaceRule
             local rule = {
