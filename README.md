@@ -154,11 +154,7 @@ opts = {
     templates = {
         ['*.c'] = {
             'skel.c',
-            replace = { 'What ever', function(ctx) {
-                -- ctx.template contains the initially loaded template
-                -- ctx.pattern holds the search pattern
-                return 'with this'
-            }
+            replace = { '<AUTHOR>', { 'git', 'config', '--global', 'user.name'  } }
         }
     }
 }
