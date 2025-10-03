@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class Modneo.Templates.Config.ReplaceContext
 ---@field template string? the name of the template originally loaded
 ---@field pattern string the pattern to replace
+---@field silent boolean tells if messages shall be supressed
 
 ---@alias Modneo.Templates.Config.ReplaceRule.Kind
 ---| 'command' ensures the value will be treated as command

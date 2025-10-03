@@ -56,6 +56,9 @@ The plugin provides an init function therefor no explicit options are required. 
         ---Set to false to avoid detection during init.
         ---The plugin comes with a skel.lua template which is detected this way.
         auto_skeletons = true,
+        ---if set to true most notifications will be supressed. It's recommended
+        ---to set this to true when the local template config is finalized.
+        silent = false
     }
 }
 ```

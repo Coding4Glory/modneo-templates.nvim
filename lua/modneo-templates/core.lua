@@ -210,7 +210,7 @@ replace_case['command'] = function(_, rhs)
     local success, err = pcall(function(c)
         vim.cmd(c)
     end, cmd)
-    if not success then
+    if not success and not ctx.silent then
         print('substitution failed: ' .. err)
     end
 end
@@ -258,6 +258,7 @@ M.replace = function(rule)
     local ctx = {
         template = get_added_template(),
         pattern = rule[1],
+        silent = M.options.silent,
     }
     if replace_case[kind] == nil then
         error('replacement rule kind ' .. (kind or 'nil') .. ' not supported')
