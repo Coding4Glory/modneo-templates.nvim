@@ -147,6 +147,8 @@ opts = {
 }
 ```
 
+To return multiple lines you can return a list instead of a string.
+
 **Using a command**
 
 ```lua
@@ -167,6 +169,36 @@ If not changed via options place your templates into the template directory, def
 - ftplugin.vim: a template for filetype plugins
 - skel.lua: a template for lua modules
 
+The plugin detects if a placeholder is inside a single line comment and acts accordingly. See following C examples.
+
+```c
+/*
+<TO_REPLACE>
+*/
+```
+
+will result in
+
+```c
+/*
+Content from
+replacement
+*/
+```
+
+while
+
+```c
+// <TO_REPLACE>
+```
+
+will result in
+
+```c
+// Content from
+// replacement
+```
+
 ### Commands ⌨
 
 ```vimdoc
@@ -182,7 +214,7 @@ If not changed via options place your templates into the template directory, def
 :TemplateAdd {name}          Adds the contents of the template at the cursor
                              line.
 
-:TemplateReplase {pattern} {name}     Performs a replacement of pattern with
+:TemplateReplace {pattern} {name}     Performs a replacement of pattern with
                                       the contents of the template specified
                                       by name.
 

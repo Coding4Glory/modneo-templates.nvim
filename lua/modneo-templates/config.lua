@@ -56,7 +56,7 @@ local defaults = {
     no_autoload = false,
     ---rutomatically adds files named `skel.*` found in template directories
     ---as template for *.ext where _ext_ is the suffix of the _skel_ file.
-    ---Defaults to false to avoid adding during init.
+    ---Default is true.
     ---@type boolean
     auto_skeletons = true,
 }
