@@ -96,7 +96,7 @@ local function normalize_templates(options)
             o.templates[pat] = factory.new(tpl)
         end, function(err)
             ---@diagnostic disable-next-line
-            if o.silent return end
+            if o.silent then return end
             print(err)
         end, options)
     end

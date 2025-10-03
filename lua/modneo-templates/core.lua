@@ -205,7 +205,7 @@ end
 
 ---@type table<Modneo.Templates.Config.ReplaceRule.Kind,fun(ctx:Modneo.Templates.Config.ReplaceContext,rhs:any)>
 local replace_case = {}
-replace_case['command'] = function(_, rhs)
+replace_case['command'] = function(ctx, rhs)
     local cmd = rhs:match('[^:].*')
     local success, err = pcall(function(c)
         vim.cmd(c)
